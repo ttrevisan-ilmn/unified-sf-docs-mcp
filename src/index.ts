@@ -183,7 +183,7 @@ async function main() {
 
 // Detect if the Smithery.ai diagnostic scanner is trying to evaluate the file
 const isSmitheryScanning = process.argv.some(arg =>
-    typeof arg === 'string' && arg.includes('.smithery') && arg.includes('scan')
+    typeof arg === 'string' && arg.includes('smithery')
 );
 
 if (!isSmitheryScanning) {
