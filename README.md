@@ -14,20 +14,24 @@ A powerful Model Context Protocol (MCP) server that empowers LLMs to scrape, dig
 2.  **`mass_extract_guide`**: Provide a "Table of Contents" or central guide URL. The server will extract the parent page, find all hierarchical child links, scrape them concurrently, chunk their content, and save them to a local SQLite database for offline querying.
 3.  **`search_local_docs`**: Provide a natural language query (e.g., `LWC lifecycle hooks`). The server queries the SQLite database using fuzzy SQL search to instantly return the best matching pre-scraped chunks of documentation.
 
-## Running Locally
+## Quick Start Installation
 
-1.  **Install Dependencies:**
+For anyone downloading this project for the first time:
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/ttrevisan-ilmn/unified-sf-docs-mcp.git
+    cd unified-sf-docs-mcp
+    ```
+2.  **Install Dependencies:**
     ```bash
     npm install
     ```
-2.  **Build the Project:**
+3.  **Build the Project:**
     ```bash
     npm run build
     ```
-3.  **Start the MCP Server:**
-    ```bash
-    npm start
-    ```
+    *(Note: The server runs from the compiled `/dist` directory, so building is required).*
 *(Note: To use the tools interactively, integrate this MCP server with an MCP client like Claude Desktop or Cursor.)*
 
 ## Testing
