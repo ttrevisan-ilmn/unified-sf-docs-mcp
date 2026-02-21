@@ -50,20 +50,33 @@ npx tsx tests/test-all.js
 
 MCP servers act as a bridge between an LLM and local tools. To actually use this server, you need to plug it into an AI coding assistant like **Cursor** or **Claude Desktop**. 
 
-### 1. Claude Desktop
+The absolute easiest way to do this is to use `npx`, which will automatically download and run the latest version of the server from NPM.
+
+### 1. Cursor (Recommended)
+
+1. Open Cursor Settings -> Features -> MCP
+2. Click **+ Add new MCP server**
+3. Configure the settings:
+   - **Type**: `command`
+   - **Name**: `unified-sf-docs`
+   - **Command**: `npx -y unified-sf-docs-mcp`
+4. Click Save. Cursor will instantly download the package and surface the 3 new tools to the Cursor Agent.
+
+### 2. Claude Desktop
 
 1. Open the Claude Desktop configuration file:
    - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
    - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-2. Add the following entry to your `mcpServers` object, replacing `/PATH/TO` with the absolute path to where you cloned this repository:
+2. Add the following entry to your `mcpServers` object:
 
 ```json
 {
   "mcpServers": {
     "unified-sf-docs": {
-      "command": "node",
+      "command": "npx",
       "args": [
-        "/PATH/TO/unified-sf-docs-mcp/dist/index.js"
+        "-y",
+        "unified-sf-docs-mcp"
       ]
     }
   }
@@ -71,12 +84,20 @@ MCP servers act as a bridge between an LLM and local tools. To actually use this
 ```
 3. Restart Claude Desktop. The tools will now be available when talking to Claude!
 
-### 2. Cursor
+---
 
-1. Open Cursor Settings -> Features -> MCP
-2. Click **+ Add new MCP server**
-3. Configure the settings:
-   - **Type**: `command`
-   - **Name**: `unified-sf-docs`
-   - **Command**: `node /PATH/TO/unified-sf-docs-mcp/dist/index.js` (Be sure to use the absolute path)
-4. Click Save. Cursor will connect to the server and surface the 3 new tools to Cursor Agent.
+### Alternative: Running a Local Clone
+If you want to modify the source code yourself, you can point your AI assistant to a local installation instead of using `npx`:
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/ttrevisan-ilmn/unified-sf-docs-mcp.git
+    cd unified-sf-docs-mcp
+    ```
+2.  **Install & Build:**
+    ```bash
+    npm install && npm run build
+    ```
+3.  **Update your MCP config:**
+    - Type: `command`
+    - Command: `node /ABSOLUTE/PATH/TO/unified-sf-docs-mcp/dist/index.js`
