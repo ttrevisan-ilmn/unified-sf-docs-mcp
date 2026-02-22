@@ -149,7 +149,7 @@ export async function searchDocuments(query: string, maxResults: number = 5) {
         FROM chunks c
         JOIN documents d ON c.document_id = d.id
         WHERE (${likeConditions})
-        LIMIT 200
+        LIMIT 1000
     `;
 
     const stmt = database.prepare(sql);
@@ -165,35 +165,67 @@ export async function searchDocuments(query: string, maxResults: number = 5) {
     }
     stmt.free();
 
-    // Score based on word hits
-    const scoredRows = rows.map(row => {
-        let hits = 0;
-        for (const term of searchTerms) {
-            if (row.content_lower.includes(term)) hits++;
-        }
-        const density = hits / searchTerms.length;
-        return { ...row, score: density, hits };
-    });
-
-    scoredRows.sort((a, b) => b.score - a.score);
-
-    // Deduplicate by URL
-    const seenUrls = new Set();
-    const finalResults = [];
-
-    for (const row of scoredRows) {
-        if (!seenUrls.has(row.url)) {
-            seenUrls.add(row.url);
-            finalResults.push({
+    // BUG-10 Fix: Group matching chunks by document URL so we can score the document globally
+    const docsByUrl = new Map();
+    for (const row of rows) {
+        if (!docsByUrl.has(row.url)) {
+            docsByUrl.set(row.url, {
                 url: row.url,
                 title: row.title,
                 category: row.category,
-                matchContent: row.content,
-                score: row.score
+                chunks: []
             });
-            if (finalResults.length >= maxResults) break;
         }
+        docsByUrl.get(row.url).chunks.push(row);
     }
 
-    return finalResults;
+    const scoredDocs = [];
+    for (const doc of docsByUrl.values()) {
+        let docHits = 0;
+        let totalFreq = 0;
+
+        // Evaluate each term against the combined content of all matched chunks for this doc
+        const combinedLower = doc.chunks.map((c: any) => c.content_lower).join(' ');
+
+        for (const term of searchTerms) {
+            if (combinedLower.includes(term)) {
+                docHits++;
+                // Rough frequency count for tie-breaking
+                totalFreq += (combinedLower.split(term).length - 1);
+            }
+        }
+
+        const density = docHits / searchTerms.length;
+
+        // Find best individual chunk to use as the snippet
+        let bestChunk = doc.chunks[0];
+        let bestChunkHits = -1;
+        for (const c of doc.chunks) {
+            let cHits = 0;
+            for (const term of searchTerms) {
+                if (c.content_lower.includes(term)) cHits++;
+            }
+            if (cHits > bestChunkHits) {
+                bestChunkHits = cHits;
+                bestChunk = c;
+            }
+        }
+
+        scoredDocs.push({
+            url: doc.url,
+            title: doc.title,
+            category: doc.category,
+            matchContent: bestChunk.content,
+            score: density,
+            totalFreq
+        });
+    }
+
+    // Sort by term coverage hits first, then by raw frequency
+    scoredDocs.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return b.totalFreq - a.totalFreq;
+    });
+
+    return scoredDocs.slice(0, maxResults);
 }
