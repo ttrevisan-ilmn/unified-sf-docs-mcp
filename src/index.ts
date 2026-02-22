@@ -37,7 +37,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         tools: [
             {
                 name: "scrape_single_page",
-                description: "Scrape a single Salesforce documentation page (handles both developer.salesforce and help.salesforce iframes/structures). Returns markdown.",
+                description: "Scrape a single Salesforce documentation page. Returns markdown. If you do not know the exact URL, you should first use a Web Search tool (like Brave or DuckDuckGo) to search for 'site:developer.salesforce.com/docs [topic]' or 'site:help.salesforce.com [topic]', then pass the retrieved URL here.",
                 inputSchema: {
                     type: "object",
                     properties: {

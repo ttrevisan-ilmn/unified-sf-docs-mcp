@@ -27,7 +27,11 @@ If the local database does not yield the required information, or the user expli
 If the user is working with a completely new Salesforce product or guide that isn't currently in the local knowledge base, suggest using `mass_extract_guide` on the root table-of-contents URL.
 - This proactively spiders and indexes up to 100 pages from the guide into the database, dramatically speeding up future `search_local_docs` queries.
 
-### Rule 4: Never Execute Local Scripts
+### Rule 4: Compose with Web Search (On-Demand RAG)
+If the user asks a complex question about an unknown Salesforce concept and it is NOT in the local database, DO NOT arbitrarily scrape root URLs hoping to find it.
+Instead, use a registered Web Search MCP (like `brave_web_search`) to query `"site:developer.salesforce.com/docs OR site:help.salesforce.com [concept]"`. Then, pass the resulting high-value URLs directly into `scrape_single_page` to autonomously read the exact targeted documentation.
+
+### Rule 5: Never Execute Local Scripts
 The `unified-sf-docs-mcp` package contains source files like `scraper.js` and `db.js`. **Do not attempt to execute these files directly via Node.js**.
 - You must exclusively use the native MCP tool integration to interact with the server.
 
