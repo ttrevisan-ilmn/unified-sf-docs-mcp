@@ -23,7 +23,8 @@ const ScrapePageSchema = z.object({
 const MassExtractSchema = z.object({
     rootUrl: z.string().url(),
     maxPages: z.number().int().min(1).max(100).optional().default(20),
-    category: z.string().optional().default("general")
+    category: z.string().optional().default("general"),
+    matchKeyword: z.string().optional().describe("Optional substring. If provided, the crawler will prioritize scraping child links containing this string.")
 });
 
 const SearchDocsSchema = z.object({
@@ -54,7 +55,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     properties: {
                         rootUrl: { type: "string", description: "The Table of Contents or landing page." },
                         maxPages: { type: "number", description: "Maximum number of pages to extract (default 20, max 100)." },
-                        category: { type: "string" }
+                        category: { type: "string" },
+                        matchKeyword: { type: "string", description: "Optional substring. If provided, the crawler will prioritize scraping child links containing this string in their URL." }
                     },
                     required: ["rootUrl"]
                 }
@@ -97,7 +99,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         if (name === "mass_extract_guide") {
-            const { rootUrl, maxPages, category } = MassExtractSchema.parse(args);
+            const { rootUrl, maxPages, category, matchKeyword } = MassExtractSchema.parse(args);
 
             console.error(`Starting mass extraction at ${rootUrl}`);
 
@@ -109,7 +111,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
             await saveDocument(rootUrl, rootResult.title, rootResult.markdown, rootResult.hash, category);
 
-            const queue = [...new Set(rootResult.childLinks)].filter(l => l !== rootUrl).slice(0, maxPages);
+            // Bug-08: Optional keyword sorting to prioritize relevant pages
+            let allLinks = [...new Set(rootResult.childLinks)].filter(l => l !== rootUrl);
+            if (matchKeyword) {
+                const keywordLower = matchKeyword.toLowerCase();
+                allLinks.sort((a, b) => {
+                    const aMatch = a.toLowerCase().includes(keywordLower) ? -1 : 1;
+                    const bMatch = b.toLowerCase().includes(keywordLower) ? -1 : 1;
+                    return aMatch - bMatch;
+                });
+            }
+
+            const queue = allLinks.slice(0, maxPages);
             let successRaw = 1;
             let failureCount = 0;
             const successfulUrls: string[] = [rootUrl];
