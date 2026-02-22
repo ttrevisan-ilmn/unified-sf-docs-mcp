@@ -13,6 +13,7 @@ A powerful Model Context Protocol (MCP) server that empowers LLMs to scrape, dig
 1.  **`scrape_single_page`**: Provide a Salesforce documentation URL. The server will use a headless browser (Puppeteer) to load the page, wait for dynamic content, pierce all shadow DOMs, and return clean Markdown.
 2.  **`mass_extract_guide`**: Provide a "Table of Contents" or central guide URL. The server will extract the parent page, find all hierarchical child links, scrape them concurrently, chunk their content, and save them to a local SQLite database for offline querying.
 3.  **`search_local_docs`**: Provide a natural language query (e.g., `LWC lifecycle hooks`). The server queries the SQLite database using fuzzy SQL search to instantly return the best matching pre-scraped chunks of documentation.
+4.  **`read_local_document`**: Rapidly extracts the full Markdown content of a documentation page that has already been indexed locally, instantly returning the content without needing to re-run headless Chromium to bypass CDNs.
 
 ## Quick Start Installation
 
