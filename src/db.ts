@@ -3,16 +3,10 @@ import initSqlJs from "sql.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import os from "os";
 
-// Safe directory resolution for both native ESM and CJS bundlers (like Smithery)
-let _dirname;
-try {
-    _dirname = dirname(fileURLToPath(import.meta.url));
-} catch (e) {
-    _dirname = process.cwd();
-}
-
-const DATA_DIR = join(_dirname, "..", "db");
+// Store the DB in the user's home directory so it's shared across npx and local executions
+const DATA_DIR = join(os.homedir(), ".unified-sf-docs-mcp");
 const DB_PATH = join(DATA_DIR, "salesforce-docs.db");
 
 let db: any = null;
