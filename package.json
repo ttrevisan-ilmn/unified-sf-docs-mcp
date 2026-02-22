@@ -1,6 +1,6 @@
 {
   "name": "unified-sf-docs-mcp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Unified MCP server for scraping Salesforce developer documentation and searching a local SQLite vector-like database.",
   "type": "module",
   "main": "dist/index.js",
