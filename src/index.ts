@@ -87,7 +87,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const result = await scrapePage(url);
 
             if (result.error) {
-                return { content: [{ type: "text", text: `Failed to scrape: ${result.error}` }], isError: true };
+                return { content: [{ type: "text", text: `Failed to scrape: ${result.error}` }] };
             }
 
             // Save automatically to local DB
