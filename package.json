@@ -23,6 +23,10 @@
     "model-context-protocol"
   ],
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmtrevisan/unified-sf-docs-mcp.git"
+  },
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

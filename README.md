@@ -21,7 +21,7 @@ For anyone downloading this project for the first time:
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/ttrevisan-ilmn/unified-sf-docs-mcp.git
+    git clone https://github.com/tmtrevisan/unified-sf-docs-mcp.git
     cd unified-sf-docs-mcp
     ```
 2.  **Install Dependencies:**
@@ -92,7 +92,7 @@ If you want to modify the source code yourself, you can point your AI assistant 
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/ttrevisan-ilmn/unified-sf-docs-mcp.git
+    git clone https://github.com/tmtrevisan/unified-sf-docs-mcp.git
     cd unified-sf-docs-mcp
     ```
 2.  **Install & Build:**
