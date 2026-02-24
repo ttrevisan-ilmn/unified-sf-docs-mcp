@@ -220,11 +220,13 @@ export async function scrapePage(url: string, baseDomain?: string): Promise<Scra
                 return { html: '', title: 'Error', error: 'HTTP 404 - Page Not Found', childLinks: Array.from(childLinks) };
             }
 
-            // BUG-01 & BUG-02: Catch SPA shells that failed to load content BEFORE generic tag fallbacks
+            // Catch SPA shells that failed to load content BEFORE generic tag fallbacks
             const bodyHtml = document.body.innerHTML;
             const isHelpSite = window.location.hostname.includes('help.salesforce.com');
+            const hasHelpContent = !!document.querySelector('.slds-text-longform');
 
-            if (bodyHtml.includes('Sorry to interrupt') || (isHelpSite && bodyHtml.length > 100000)) {
+            // If it's a huge help site payload but the actual text container is missing, the SPA failed to hydrate
+            if (bodyHtml.includes('Sorry to interrupt') || (isHelpSite && !hasHelpContent && bodyHtml.length > 100000)) {
                 return {
                     html: '',
                     title: 'Error',
