@@ -48,12 +48,24 @@ The absolute easiest way to do this is to use `npx`, which will automatically do
       "args": [
         "-y",
         "unified-sf-docs-mcp"
-      ]
+      ],
+      "env": {
+        "SF_DOCS_DB_DIR": "/absolute/path/to/your/private/github/repository"
+      }
     }
   }
 }
 ```
 3. Restart Claude Desktop. The tools will now be available when talking to Claude!
+
+### 3. Git-Backed Persistence (Team Sharing & Vector Syncing)
+By default, the SQLite database is securely stored entirely offline at `~/.unified-sf-docs-mcp/salesforce-docs.db`. 
+
+If you want to sync your scraped AI Knowledge Base across multiple computers, or share a pre-scraped `docs.db` vector database with a private engineering team:
+1. Create a **Private** Git Repository (e.g. on GitHub). *Note: Keep it private to avoid distributing Salesforce's copyrighted material publicly.*
+2. Clone it to your local machine (e.g. `/Users/todd/my-private-sf-kb`).
+3. Add the `SF_DOCS_DB_DIR` environment variable to your Cursor or Claude Desktop MCP settings, pointing to your cloned folder.
+4. Run `mass_extract_guide` via your AI to scrape the documentation. The 100MB+ `salesforce-docs.db` will be securely created inside your Git repository, ready to be committed and pushed!
 
 ---
 

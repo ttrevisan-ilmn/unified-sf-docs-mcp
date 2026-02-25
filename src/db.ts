@@ -5,8 +5,8 @@ import { dirname, join } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import os from "os";
 
-// Store the DB in the user's home directory so it's shared across npx and local executions
-const DATA_DIR = join(os.homedir(), ".unified-sf-docs-mcp");
+// Store the DB in the user's home directory so it's shared across npx and local executions, unless overridden by an ENV var
+const DATA_DIR = process.env.SF_DOCS_DB_DIR || join(os.homedir(), ".unified-sf-docs-mcp");
 const DB_PATH = join(DATA_DIR, "salesforce-docs.db");
 
 let db: any = null;
